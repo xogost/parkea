@@ -1,0 +1,236 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!-- Consider adding an manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/b/378 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  
+  <title>{{title}}</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Mobile viewport optimized: j.mp/bplateviewport -->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <!-- meta for google maps API implementation -->
+  <!-- <meta name="viewport" content="initial-scale=1.0, user-scalable=no" /> -->
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
+
+  <!-- CSS: implied media=all -->
+  <!-- CSS concatenated and minified via ant build script-->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">
+  <!-- end CSS-->
+
+  <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
+
+  <!-- All JavaScript at the bottom, except for Modernizr / Respond.
+       Modernizr enables HTML5 elements & feature detects; Respond is a polyfill for min/max-width CSS3 Media Queries
+       For optimal performance, use a custom Modernizr build: www.modernizr.com/download/ -->
+  <script src="{{ STATIC_URL  }}js/modernizr-2.0.6.min.js"></script>
+
+  <!-- Script for google maps API version 3 -->
+  <script type="text/javascript" src="http://code.google.com/apis/gears/gears_init.js"></script>
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=es"></script>
+
+  <!-- Script of application -->
+  <script type="text/javascript" src="{{ STATIC_URL }}js/park-map.js"></script>
+  <script type="text/javascript">
+  
+  var _json = JSON.parse({{json|safe}});
+
+  var _tweets = {{tweets|safe}};
+
+  </script>
+</head>
+
+<body onload="load_map(_json);">
+  
+  <div id="container">
+    <header>
+    {% if flavour != "mobile" %}
+      <section id="header_left" >
+          <h1 id="logo">arkea</h1>
+      </section>
+      <section id="header_right" >
+         <input id="txtsearch" type="text" name="search" placeholder="¿Que buscas?" /> <a id="registro" class="login" href="#" >Registrate</a><form id="frmlogin" action="/dologin/" method="post"> <input type="submit" style="position:absolute; top:0;"  id="login_l" class="login">Iniciar Sesion </input></form>
+      </section>
+    {% else %}
+      <section style="text-align:center; height:50px;">
+          <h2 id="logom"><img width="36px" src="{{STATIC_URL}}img/Parkea_logo.png">arkea Mobile</h2>
+      </section>
+    {% endif %}
+    </header>
+    <nav>
+      <ul class="navigation">
+      {% if flavour == "mobile" %}
+        <li><a id="bMapa" href="#">Mapa</a></li>
+        <li><a id="bRuta" href="#">Ruta</a></li>
+      {%endif%}
+      <!--<li><a href="#">Zonas</a></li>
+      <li><a href="#">Tipos</a></li>
+      <li><a href="#">Contactenos</a></li>-->
+      </ul>
+    </nav>
+    <div id="main" role="main">
+      {% if flavour != "mobile" %}
+        <section class="content_map">
+          <div id="map_canvas" class="park_map"></div>
+          <div id="park_ruta">
+            <div id="rutaOps" height="30px;" style="text-align:center; background:#fff;">
+            <select id="modo_viaje" class="opciones_ruta">
+                <option value="DRIVING" selected="selected">Auto</option>
+                <option value="BICYCLING">Bicicleta</option>
+                <option value="WALKING">Caminando</option>
+            </select>
+            <select id="tipo_sistema" class="opciones_ruta">
+                <option value="METRIC" selected="selected">Métrico</option>
+                <option value="IMPERIAL">Imperial</option>
+            </select>
+          </div>
+          <div id="panel_ruta" width="100%" style="overflow: auto; width:100%; height: 480px">
+          </div>
+          </div>
+        </section>
+        <section id="park_back">
+        </section>
+      {%else%}
+        <section class="content_map">
+        <div id="map_canvas" class="park_mapm"></div>
+        <div id="park_rutam" style="display: none;">
+          <div id="rutaOps" height="30px;" style="text-align:center; background:#fff;">
+            <select id="modo_viaje" class="opciones_ruta">
+                <option value="DRIVING" selected="selected">Auto</option>
+                <option value="BICYCLING">Bicicleta</option>
+                <option value="WALKING">Caminando</option>
+            </select>
+            <select id="tipo_sistema" class="opciones_ruta">
+                <option value="METRIC" selected="selected">Métrico</option>
+                <option value="IMPERIAL">Imperial</option>
+            </select>
+          </div>
+          <div id="panel_ruta"style="overflow: auto; width:100%; height: 284px">
+          </div>
+          </div>
+        </section>
+        <section id="park_back">
+        </section>
+      {%endif%}
+      {% if flavour != "mobile" %}
+        <section id="section_right">
+          <p id="p_recient_activity" class="p_index">Actividad Reciente</p>
+          <aside>
+            <ul id="recient_activity">
+            
+            <ul>
+          </aside> 
+        </section>
+        <section id="section_left">
+        <p id="p_article" class="p_index">¿No te preocupes por los detalles y sal de tu casa sin problema?</p>
+        <article class="article_index">
+        Encuentra facilmente donde estacionar tu vehiculo, y aprovecha el tiempo en cosas verdaderamente importantes.
+        </article>
+        <p id="p_article" class="p_index">¿Nos mas vueltas en circulos?</p>
+        <article class="article_index">
+        Si haces planes ubicar un lugar cercano donde parquear es muy util y eficiente.
+        </article>
+        <p id="p_article" class="p_index">¿Sabes que piensan tus amigos del servicio en los parqueaderos?</p>
+        <article class="article_index">
+        Enterate de la opinion de los que utilizan a diario este servicio
+        </article>
+        </section>
+      {%else%}  
+        <section style="width: 100%;">
+          <p id="p_recient_activitym" class="p_index">Actividad Reciente</p>
+          <aside>
+            <ul id="recient_activity" class="m_list">
+            
+            <ul>
+          </aside> 
+        </section>
+      {%endif%}
+
+      <section>
+      </section>
+    </div>
+    <footer>
+
+    </footer>
+  </div> <!--! end of #container -->
+</div>
+
+  <!-- JavaScript at the bottom for fast page loading -->
+
+  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="{{ STATIC_URL  }}js/jquery-1.6.2.min.js"><\/script>')</script>
+
+  <!-- scripts concatenated and minified via ant build script-->
+  <script defer src="{{ STATIC_URL  }}js/application.js"></script>
+  <script defer src="{{ STATIC_URL  }}js/plugins.js"></script>
+  <script defer src="{{ STATIC_URL  }}js/script.js"></script>
+  <!-- end scripts-->
+  <script>
+    var directionsDisplay = new google.maps.DirectionsRenderer();
+    var directionsService = new google.maps.DirectionsService();
+
+    function Asignar_Destino(_latitud, _longitud){
+      myposition_latitud_d = _latitud;
+      myposition_longitud_d = _longitud;
+      Trazar();
+    }
+
+    function Trazar(){
+        var request = {
+            origin: myposition_latitud +","+ myposition_longitud, 
+            //destination: myposition_latitud_d +","+ myposition_longitud_d,
+            destination: position_marker.Ua +","+ position_marker.Va,
+            travelMode: google.maps.DirectionsTravelMode[$('#modo_viaje').val()],
+            unitSystem: google.maps.DirectionsUnitSystem[$('#tipo_sistema').val()],
+            provideRouteAlternatives: true
+        };
+     
+        directionsService.route(request, function(response, status) {
+          if (status == google.maps.DirectionsStatus.OK) {
+              directionsDisplay.setMap(map);
+              directionsDisplay.setPanel($("#panel_ruta").get(0));
+              directionsDisplay.setDirections(response);
+          } else {
+              alert("No existen rutas entre ambos puntos");
+          }
+      });
+
+        $("#park_ruta").fadeIn("slow");
+  }
+ 
+    $('.opciones_ruta').live('change', function(){
+      Trazar();
+    });
+
+  </script>
+	
+  <!-- Change UA-XXXXX-X to be your site's ID -->
+  <script>
+    window._gaq = [['_setAccount','UAXXXXXXXX1'],['_trackPageview'],['_trackPageLoadTime']];
+    Modernizr.load({
+      load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
+    });
+  </script>
+  
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+  <![endif]-->
+  
+</body>
+</html>
